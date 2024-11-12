@@ -9,9 +9,12 @@
       <CapsuleCard
         v-for="(capsule, index) in capsules"
         :key="index"
+        :id="capsule.id"
         :title="capsule.title"
+        :description="capsule.description"
         :unlockDate="capsule.unlockDate"
         :status="capsule.status"
+        @delete="removeCapsule(capsule.id)"
       />
     </div>
 
@@ -42,31 +45,69 @@
 
 <script>
 import CapsuleCard from './CapsuleCard.vue';
-
+import axios from 'axios';
 export default {
   components: {
     CapsuleCard,
   },
   data() {
     return {
-      capsules: [
-        { title: 'Capsule 1', unlockDate: '2024-10-15', status: 'Locked' },
-        { title: 'Capsule 2', unlockDate: '2025-12-01', status: 'Locked' },
-        { title: 'Capsule 3', unlockDate: '2023-10-10', status: 'Unlocked' },
-        { title: 'Capsule 4', unlockDate: '2024-10-21', status: 'Locked' },
-      ],
+      capsules: [],
       showModal: false,
       newCapsule: {
         title: '',
+        description: '',
         unlockDate: '',
       },
+      apiUrl: 'http://localhost:8080/api/capsules',
     };
   },
-  methods: {
-    popupModal() {
-      this.showModal = !this.showModal;
-    },
+  created() {
+  this.getCapsules();
+ },
+ methods: {
+  async getCapsules() {
+    try {
+      const response = await axios.get(`${this.apiUrl}/my-capsules`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`, // assuming the token is stored in localStorage
+        },
+      });
+      this.capsules = response.data;
+      console.log(response.data);
+    } catch (error) {
+      console.error('Failed to fetch capsules:', error);
+    }
   },
+  popupModal() {
+    this.showModal = !this.showModal;
+  },
+  async submitForm() {
+    try {
+      const response = await axios.post(
+        `${this.apiUrl}/create`,
+        {
+          title: this.newCapsule.title,
+          description: this.newCapsule.description,
+          unlockDate: this.newCapsule.unlockDate,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        alert('Capsule created successfully');
+        this.getCapsules(); // Refresh the capsules list
+        this.popupModal();
+      }
+    } catch (error) {
+      console.error('Failed to create capsule:', error);
+    }
+  },
+},
 };
 </script>
 

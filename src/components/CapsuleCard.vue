@@ -15,22 +15,47 @@
 </template>
 
 <script>
+import axios from 'axios';
 export default {
-  props: ['title', 'unlockDate', 'status'],
+  props: ['id','title','description', 'unlockDate', 'status'],
   data() {
     return {
       showOptions: false,
     };
   },
   methods: {
-    deleteCapsule() {
-      this.showOptions = !this.showOptions;
-    },
-    deleteItem() {
-      this.$emit('delete');
-      this.showOptions = false;
-    },
+  deleteCapsule() {
+    this.showOptions = !this.showOptions;
   },
+  async deleteItem() {
+  try {
+    if (this.id) {
+      const response = await axios.delete(
+        `http://localhost:8080/api/capsules/${this.id}`, // Use the id prop for the DELETE endpoint
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        alert('Capsule deleted successfully');
+        this.$emit('delete'); // Emit event to parent component to remove item from list
+      }
+    } else {
+      console.error('No ID provided for deletion');
+    }
+  } catch (error) {
+    console.error('Failed to delete capsule:', error);
+    alert('Failed to delete capsule.');
+  }
+
+  this.showOptions = false;
+}
+
+},
+
 };
 </script>
 
