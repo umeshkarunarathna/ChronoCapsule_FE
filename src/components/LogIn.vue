@@ -36,13 +36,27 @@ export default {
     async login() {
       try {
         const response = await axios.post('http://localhost:8080/api/users/login', {
-          username: this.username,
-          password: this.password,
-        });
-
-        localStorage.setItem('token', response.data.token); // Assuming the backend sends a token
+        username: this.username,
+        password: this.password,
+      }, {
+         headers: {
+        'Content-Type': 'application/json',
+      }
+      })
+        const token = response.data.token;
+        localStorage.setItem('token', token);
         alert('Login successful');
-        this.$router.push('/dashboard'); // Redirect to the dashboard
+
+        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+
+        const emailResponse = await axios.get('http://localhost:8080/api/users/email', {
+          headers: {
+            Authorization: `Bearer ${token}`, 
+          }
+        });
+        const userEmail = emailResponse.data;
+        localStorage.setItem('userEmail', userEmail);
+        this.$router.push('/dashboard'); 
       } catch (error) {
         console.error('Failed to login:', error);
         alert('Invalid username or password');
