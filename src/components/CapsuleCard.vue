@@ -2,9 +2,10 @@
   <div class="capsule-card">
     <div class="capsule-header">
       <h3>{{ title }}</h3>
-      <i class="fas fa-ellipsis-h" @click="deleteCapsule"></i>
+      <i class="fas fa-ellipsis-h" @click="toggleOptions"></i>
       <div v-if="showOptions" class="options-popup">
         <p @click="deleteItem">Delete</p>
+        <p @click="startEditing">Edit</p>
       </div>
     </div>
     <div class="capsule-body">
@@ -12,6 +13,13 @@
       <p>Status: {{ localStatus }}</p>
       <p v-if="descriptionVisible">Description: {{ description }}</p>
       <p>Time Remaining: {{ countdownTime }}</p>
+      
+      <div v-if="isEditing" class="edit-form">
+        <label for="newUnlockDate">New Unlock Date:</label>
+        <input type="date" v-model="currentUnlockDate" id="newUnlockDate" />
+        <button @click="saveEdit">Save</button>
+        <button @click="cancelEdit">Cancel</button>
+      </div>
     </div>
   </div>
 </template>
@@ -24,7 +32,9 @@ export default {
   data() {
     return {
       showOptions: false,
-      localStatus: this.status, // Create a local variable for status
+      isEditing: false,
+      currentUnlockDate: this.unlockDate,
+      localStatus: this.status,
       descriptionVisible: false,
       countdownTime: '',
       notificationSent: false, // Track if notification is sent
@@ -34,35 +44,89 @@ export default {
     this.startCountdown();
   },
   methods: {
-    deleteCapsule() {
+    toggleOptions() {
       this.showOptions = !this.showOptions;
     },
     async deleteItem() {
       try {
-        if (this.id) {
-          const response = await axios.delete(
-            `http://localhost:8080/api/capsules/${this.id}`,
-            {
-              headers: {
-                Authorization: `Bearer ${localStorage.getItem('token')}`,
-              },
-            }
-          );
+        if (!this.id) {
+          alert('No ID provided for deletion.');
+          return;
+        }
 
-          if (response.status === 200) {
-            alert('Capsule deleted successfully');
-            this.$emit('delete');
+        const response = await axios.delete(
+          `http://localhost:8080/api/capsules/${this.id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem('token')}`,
+            },
           }
+        );
+
+        if (response.status === 200) {
+          alert('Capsule deleted successfully');
+          this.$emit('delete');
         } else {
-          console.error('No ID provided for deletion');
+          console.error(`Unexpected response status: ${response.status}`);
+          alert('Failed to delete capsule due to unexpected server response.');
         }
       } catch (error) {
-        console.error('Failed to delete capsule:', error);
-        alert('Failed to delete capsule.');
+        if (error.response) {
+          console.error('Server error:', error.response.data);
+          alert(`Failed to delete capsule: ${error.response.data.message || 'Server error'}`);
+        } else if (error.request) {
+          console.error('No response received:', error.request);
+          alert('Failed to delete capsule: No response from the server.');
+        } else {
+          console.error('Error:', error.message);
+          alert(`Failed to delete capsule: ${error.message}`);
+        }
+      } finally {
+        this.showOptions = false;
       }
-
-      this.showOptions = false;
     },
+    startEditing() {
+      this.isEditing = true;
+      this.showOptions = false; // Hide options after clicking edit
+    },
+    cancelEdit() {
+      this.isEditing = false;
+      this.currentUnlockDate = this.unlockDate; // Revert back to original date if canceled
+    },
+    async saveEdit() {
+    try {
+      if (this.id) {
+        const response = await axios.put(
+          `http://localhost:8080/api/capsules/${this.id}`,
+          {
+            id: this.id,
+            title: this.title,
+            description: this.description,
+            unlockDate: this.currentUnlockDate, // Update unlock date
+            status: this.localStatus,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem('token')}`,
+              'Content-Type': 'application/json',
+            },
+          }
+        );
+
+        if (response.status === 200) {
+          alert('Unlock date updated successfully');
+          this.isEditing = false; // Exit edit mode
+          this.$emit('updateUnlockDate', { id: this.id, unlockDate: this.currentUnlockDate }); // Emit the updated date to the parent
+          this.startCountdown(); // Restart countdown with the new unlock date
+        }
+      } else {
+        console.error('No ID provided for editing');
+      }
+    } catch (error) {
+      console.error('Failed to update unlock date:', error);
+      alert('Failed to update unlock date.');
+    }
+  },
     startCountdown() {
       const unlockDateTime = new Date(this.unlockDate).getTime();
       const interval = setInterval(() => {
@@ -99,22 +163,22 @@ export default {
     async sendNotificationEmail(message) {
       try {
         const useremail = localStorage.getItem('userEmail');
-            // Send email notification
-            await axios.post(
-              'http://localhost:8080/api/email/send',
-              {
-                email: useremail,
-                title: 'Capsule Notification',
-                description: message,
-              },
-              {
-                headers: {
-                  Authorization: `Bearer ${localStorage.getItem('token')}`,
-                  'Content-Type': 'application/json',
-                },
-              }
-            );
-        } catch (error) {
+        // Send email notification
+        await axios.post(
+          'http://localhost:8080/api/email/send',
+          {
+            email: useremail,
+            title: 'Capsule Notification',
+            description: message,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem('token')}`,
+              'Content-Type': 'application/json',
+            },
+          }
+        );
+      } catch (error) {
         console.error('Failed to send notification email:', error);
       }
     },
@@ -165,5 +229,23 @@ export default {
 
 .options-popup p:hover {
   background-color: #f0f0f0;
+}
+
+.edit-form {
+  margin-top: 10px;
+}
+
+.edit-form label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.edit-form input {
+  margin-bottom: 10px;
+  padding: 5px;
+}
+
+.edit-form button {
+  margin-right: 10px;
 }
 </style>

@@ -15,6 +15,7 @@
         :unlockDate="capsule.unlockDate"
         :status="capsule.status"
         @delete="removeCapsule(capsule.id)"
+        @updateUnlockDate="updateCapsuleUnlockDate"
       />
     </div>
 
@@ -82,6 +83,9 @@ export default {
   popupModal() {
     this.showModal = !this.showModal;
   },
+  removeCapsule(capsuleId) {
+      this.capsules = this.capsules.filter(capsule => capsule.id !== capsuleId);
+    },
   async submitForm() {
     try {
       const response = await axios.post(
@@ -107,6 +111,12 @@ export default {
       console.error('Failed to create capsule:', error);
     }
   },
+  updateCapsuleUnlockDate(updatedCapsule) {
+    const capsuleIndex = this.capsules.findIndex(capsule => capsule.id === updatedCapsule.id);
+    if (capsuleIndex !== -1) {
+      this.capsules[capsuleIndex].unlockDate = updatedCapsule.unlockDate;
+    }
+  }
 },
 };
 </script>
