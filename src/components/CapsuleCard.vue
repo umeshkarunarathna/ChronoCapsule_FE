@@ -16,7 +16,7 @@
       
       <div v-if="isEditing" class="edit-form">
         <label for="newUnlockDate">New Unlock Date:</label>
-        <input type="date" v-model="currentUnlockDate" id="newUnlockDate" />
+        <input type="date" v-model="currentUnlockDate" id="newUnlockDate" required :min="this.getCurrentDate()" />
         <button @click="saveEdit">Save</button>
         <button @click="cancelEdit">Cancel</button>
       </div>
@@ -39,11 +39,25 @@ export default {
       countdownTime: '',
       notificationSent: false, // Track if notification is sent
     };
+    
   },
   mounted() {
     this.startCountdown();
   },
   methods: {
+
+    getCurrentDate() {
+      const today = new Date();
+      const yyyy = today.getFullYear();
+      let mm = today.getMonth() + 1; 
+      let dd = today.getDate();
+
+      if (mm < 10) mm = '0' + mm;
+      if (dd < 10) dd = '0' + dd;
+
+      return `${yyyy}-${mm}-${dd}`;
+    },
+
     toggleOptions() {
       this.showOptions = !this.showOptions;
     },
@@ -155,10 +169,11 @@ export default {
       }, 1000);
     },
     formatTimeRemaining(time) {
+      const days = Math.floor(time / (1000 * 60 * 60 * 24));
       const hours = Math.floor((time % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
       const minutes = Math.floor((time % (1000 * 60 * 60)) / (1000 * 60));
       const seconds = Math.floor((time % (1000 * 60)) / 1000);
-      return `${hours}h ${minutes}m ${seconds}s`;
+      return `${days}d ${hours}h ${minutes}m ${seconds}s`;
     },
     async sendNotificationEmail(message) {
       try {
@@ -193,32 +208,41 @@ export default {
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   position: relative;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: 1px solid #e0e0e0; /* Add subtle border */
+  border-radius: 12px; /* Slightly larger rounding for a solid feel */
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15); /* Enhanced shadow for depth */
 }
 
 .capsule-header {
+  text-align: center;
+  text-transform: capitalize;
+  font-family:Verdana, Geneva, Tahoma, sans-serif;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
 .capsule-header h3 {
-  font-size: 18px;
+  font-size: 20px;
+  font-weight: 600;
 }
 
 .capsule-body p {
-  margin: 5px 0;
+  margin: 10px 0;
 }
 
 .options-popup {
   position: absolute;
-  top: 35px;
+  top: 40px;
   right: 10px;
   background-color: #fff;
   border: 1px solid #ddd;
-  border-radius: 4px;
+  border-radius: 6px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   padding: 5px;
   z-index: 10;
+  transition: opacity 0.3s ease;
 }
 
 .options-popup p {
@@ -228,7 +252,7 @@ export default {
 }
 
 .options-popup p:hover {
-  background-color: #f0f0f0;
+  background-color: #f5f5f5;
 }
 
 .edit-form {
@@ -247,5 +271,10 @@ export default {
 
 .edit-form button {
   margin-right: 10px;
+}
+
+.capsule-card:hover {
+  transform: translateY(-7px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
 }
 </style>

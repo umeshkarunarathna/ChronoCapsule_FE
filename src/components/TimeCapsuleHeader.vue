@@ -6,16 +6,7 @@
       <h1>Chrono Capsule</h1>
     </div>
 
-    <div class="search-bar-container">
-      <div class="search-bar">
-        <input type="text" placeholder="Search..." />
-        <i class="fas fa-search" title="Search"></i>
-      </div>
-    </div>
-
     <div class="header-icons">
-      
-      <i class="fas fa-bell" title="Notifications"></i>
 
       <div class="settings-dropdown">
         <i class="fas fa-cog" title="Settings" @click="toggleSettingsMenu"></i>

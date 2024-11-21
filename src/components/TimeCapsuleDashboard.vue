@@ -1,5 +1,7 @@
 <template>
   <div class="dashboard">
+    <TimeCapsuleHeader></TimeCapsuleHeader>
+    <br>
     <div class="header">
       <h2>Capsule Summary</h2>
       <button class="create-btn" @click="popupModal">Create Capsule</button>
@@ -34,7 +36,7 @@
           </div>
           <div class="form-group">
             <label for="unlockDate">Unlock Date: </label>
-            <input type="date" v-model="newCapsule.unlockDate" id="unlockDate" required />
+            <input type="date" v-model="newCapsule.unlockDate" id="unlockDate" required :min="currentDate" />
           </div>
           <button type="submit" class="submit-btn">Create</button>
           <button type="button" class="cancel-btn" @click="popupModal">Cancel</button>
@@ -45,10 +47,12 @@
 </template>
 
 <script>
+import TimeCapsuleHeader from './TimeCapsuleHeader.vue'
 import CapsuleCard from './CapsuleCard.vue';
 import axios from 'axios';
 export default {
   components: {
+    TimeCapsuleHeader,
     CapsuleCard,
   },
   data() {
@@ -61,12 +65,26 @@ export default {
         unlockDate: '',
       },
       apiUrl: 'http://localhost:8080/api/capsules',
+      currentDate: this.getCurrentDate()
     };
   },
   created() {
   this.getCapsules();
  },
  methods: {
+
+  getCurrentDate() {
+      const today = new Date();
+      const yyyy = today.getFullYear();
+      let mm = today.getMonth() + 1; 
+      let dd = today.getDate();
+
+      if (mm < 10) mm = '0' + mm;
+      if (dd < 10) dd = '0' + dd;
+
+      return `${yyyy}-${mm}-${dd}`;
+    },
+
   async getCapsules() {
     try {
       const response = await axios.get(`${this.apiUrl}/my-capsules`, {
@@ -133,6 +151,8 @@ export default {
 
 .header {
   display: flex;
+  flex-direction: column;
+  align-items: center;
   justify-content: space-between;
   margin-bottom: 20px;
   background-color: #34495e;
@@ -142,6 +162,7 @@ export default {
 }
 
 .create-btn {
+  width: 100%;
   padding: 15px;
   background-color: cadetblue;
   color: white;
@@ -164,8 +185,9 @@ export default {
   gap: 15px;
   background-color: #dfe6e9; 
   padding: 10px;
-
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  height: auto;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
 }
 
 
@@ -187,13 +209,15 @@ export default {
   background-color: rgb(174, 223, 193);
   padding: 30px;
   border-radius: 8px;
-  width: 400px;
+  width: 100%;
+  max-width: 400px;
 }
 
 .form-group {
   padding: 20px;
   margin-bottom: 15px;
   color: #2c3e50; 
+  font-size: 1rem;
 }
 
 .submit-btn, .cancel-btn {
@@ -202,6 +226,8 @@ export default {
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  width: 100%;
+  margin-bottom: 10px;
 }
 
 .submit-btn {
@@ -225,5 +251,20 @@ export default {
 #description{
   height: 150px;
   width: 300px;
+}
+
+@media (min-width: 768px) {
+  .header {
+    flex-direction: row; /* Horizontal layout for larger screens */
+  }
+
+  .create-btn {
+    width: auto; /* Shrink button width on larger screens */
+  }
+
+  .submit-btn, .cancel-btn {
+    width: auto; /* Shrink buttons back to fit content */
+    margin-bottom: 0;
+  }
 }
 </style>
