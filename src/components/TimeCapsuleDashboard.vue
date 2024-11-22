@@ -253,6 +253,7 @@ export default {
   width: 300px;
 }
 
+
 @media (min-width: 768px) {
   .header {
     flex-direction: row; /* Horizontal layout for larger screens */
@@ -266,5 +267,6 @@ export default {
     width: auto; /* Shrink buttons back to fit content */
     margin-bottom: 0;
   }
+  
 }
 </style>

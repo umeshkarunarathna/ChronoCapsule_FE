@@ -4,7 +4,7 @@
       <h3>{{ title }}</h3>
       <i class="fas fa-ellipsis-h" @click="toggleOptions"></i>
       <div v-if="showOptions" class="options-popup">
-        <p @click="deleteItem">Delete</p>
+        <p @click="confirmDelete">Delete</p>
         <p @click="startEditing">Edit</p>
       </div>
     </div>
@@ -17,8 +17,10 @@
       <div v-if="isEditing" class="edit-form">
         <label for="newUnlockDate">New Unlock Date:</label>
         <input type="date" v-model="currentUnlockDate" id="newUnlockDate" required :min="this.getCurrentDate()" />
-        <button @click="saveEdit">Save</button>
-        <button @click="cancelEdit">Cancel</button>
+        <div class="editButton-Group">
+          <button class="editForm-Save" @click="saveEdit">Save</button>
+        <button class="editForm-Cancel" @click="cancelEdit">Cancel</button>
+        </div>
       </div>
     </div>
   </div>
@@ -61,6 +63,14 @@ export default {
     toggleOptions() {
       this.showOptions = !this.showOptions;
     },
+
+    confirmDelete() {
+      const confirmed = window.confirm("Are you sure you want to delete this capsule ?");
+      if (confirmed) {
+        this.deleteItem();
+      }
+    },
+
     async deleteItem() {
       try {
         if (!this.id) {
@@ -229,6 +239,8 @@ export default {
 }
 
 .capsule-body p {
+  font-family:Verdana, Geneva, Tahoma, sans-serif;
+  font-size: 15px;
   margin: 10px 0;
 }
 
@@ -277,4 +289,39 @@ export default {
   transform: translateY(-7px);
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
 }
+
+.edit-form{
+  font-family:Verdana, Geneva, Tahoma, sans-serif;
+  font-size: small;
+  font-weight: bold;
+  color: red;
+  flex-direction: column;
+}
+
+.editForm-Save,
+.editForm-Cancel {
+  font-size: medium;
+  padding: 10px 15px;
+  margin-right: 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 45%;
+  margin-bottom: 10px;
+}
+
+.editForm-Save{
+background-color: rgb(72, 157, 72);
+}
+
+.editForm-Cancel{
+background-color: rgb(234, 118, 105);
+}
+
+.editButton-Group{
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
 </style>
