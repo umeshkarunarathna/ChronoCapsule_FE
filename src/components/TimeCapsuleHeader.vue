@@ -1,51 +1,66 @@
 <template>
   <header class="app-header">
     <div class="logo-and-title">
-      
       <img src="@/assets/ccLogo.png" alt="Logo" class="logo" />
       <h1>Chrono Capsule</h1>
     </div>
 
     <div class="header-icons">
-
       <div class="profile-dropdown">
-  <i class="fas fa-user" title="Settings" @click="toggleSettingsMenu"></i>
-  <div :class="{'dropdown-menu': true, 'show': showSettingsMenu}" id="settings">
-    <ul>
-      <li @click="logout">Profile</li>
-      <li @click="logout">Logout</li>
-    </ul>
-  </div>
-</div>
-
-      
+        <i class="fas fa-user" title="Settings" @click="toggleSettingsMenu"></i>
+        <div :class="{'dropdown-menu': true, 'show': showSettingsMenu}" id="settings">
+          <ul>
+            <li @click="viewProfile">Profile</li>
+            <li @click="logout">Logout</li>
+          </ul>
+        </div>
+      </div>
     </div>
   </header>
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
   name: "AppHeader",
   data() {
     return {
-      showSettingsMenu: false, 
-      showProfileMenu: false,
+      showSettingsMenu: false,
     };
   },
   methods: {
-
-    toggleProfileMenu() {
-      this.showProfileMenu = !this.showProfileMenu;
-    },
-    
     toggleSettingsMenu() {
-      this.showSettingsMenu = !this.showSettingsMenu; 
+      this.showSettingsMenu = !this.showSettingsMenu;
     },
-  
-    logout() {
-      
-      //console.log("Log Out clicke test");
-      this.showSettingsMenu = false;
+
+    viewProfile() {
+      // Code to navigate to the profile page, if needed
+    },
+
+    async logout() {
+      try {
+        // Call the logout API to invalidate the token
+        await axios.post('http://localhost:8080/api/users/logout', {}, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        });
+
+        // Clear the local storage
+        localStorage.removeItem('token');
+        localStorage.removeItem('userEmail');
+
+        // Redirect to the login page
+        this.$router.push('/login');
+        alert('Logout successful');
+      } catch (error) {
+        console.error('Failed to logout:', error);
+        alert('Failed to logout. Please try again.');
+      } finally {
+        // Hide the settings menu after logout attempt
+        this.showSettingsMenu = false;
+      }
     },
   },
 };
@@ -75,7 +90,6 @@ export default {
   border-radius: 30px;
   margin-right: 10px;
 }
-
 
 .header-icons {
   display: flex;
@@ -112,11 +126,6 @@ export default {
   visibility: visible;
   transform: translateY(0);
   transition: opacity 0.3s ease, transform 0.3s ease;
-}
-
-
-#profile {
-  top: 85px;
 }
 
 .dropdown-menu ul {

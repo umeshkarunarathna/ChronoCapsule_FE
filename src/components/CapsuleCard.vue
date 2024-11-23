@@ -9,17 +9,17 @@
       </div>
     </div>
     <div class="capsule-body">
-      <p>Unlock Date: {{ unlockDate }}</p>
+      <p>Unlock Date: {{ currentUnlockDate }}</p>
       <p>Status: {{ localStatus }}</p>
       <p v-if="descriptionVisible">Description: {{ description }}</p>
       <p>Time Remaining: {{ countdownTime }}</p>
       
       <div v-if="isEditing" class="edit-form">
         <label for="newUnlockDate">New Unlock Date:</label>
-        <input type="date" v-model="currentUnlockDate" id="newUnlockDate" required :min="this.getCurrentDate()" />
+        <input type="date" v-model="currentUnlockDate" id="newUnlockDate" required :min="getCurrentDate()" />
         <div class="editButton-Group">
           <button class="editForm-Save" @click="saveEdit">Save</button>
-        <button class="editForm-Cancel" @click="cancelEdit">Cancel</button>
+          <button class="editForm-Cancel" @click="cancelEdit">Cancel</button>
         </div>
       </div>
     </div>
@@ -40,14 +40,22 @@ export default {
       descriptionVisible: false,
       countdownTime: '',
       notificationSent: false, // Track if notification is sent
+      countdownInterval: null, // Store the interval for countdown
     };
     
   },
   mounted() {
     this.startCountdown();
   },
+  watch: {
+    currentUnlockDate() {
+      this.startCountdown();
+    },
+  },
+  beforeUnmount() {
+    clearInterval(this.countdownInterval);
+  },
   methods: {
-
     getCurrentDate() {
       const today = new Date();
       const yyyy = today.getFullYear();
@@ -118,47 +126,51 @@ export default {
       this.currentUnlockDate = this.unlockDate; // Revert back to original date if canceled
     },
     async saveEdit() {
-    try {
-      if (this.id) {
-        const response = await axios.put(
-          `http://localhost:8080/api/capsules/${this.id}`,
-          {
-            id: this.id,
-            title: this.title,
-            description: this.description,
-            unlockDate: this.currentUnlockDate, // Update unlock date
-            status: this.localStatus,
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem('token')}`,
-              'Content-Type': 'application/json',
+      try {
+        if (this.id) {
+          const response = await axios.put(
+            `http://localhost:8080/api/capsules/${this.id}`,
+            {
+              id: this.id,
+              title: this.title,
+              description: this.description,
+              unlockDate: this.currentUnlockDate, // Update unlock date
+              status: this.localStatus,
             },
-          }
-        );
+            {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem('token')}`,
+                'Content-Type': 'application/json',
+              },
+            }
+          );
 
-        if (response.status === 200) {
-          alert('Unlock date updated successfully');
-          this.isEditing = false; // Exit edit mode
-          this.$emit('updateUnlockDate', { id: this.id, unlockDate: this.currentUnlockDate }); // Emit the updated date to the parent
-          this.startCountdown(); // Restart countdown with the new unlock date
+          if (response.status === 200) {
+            alert('Unlock date updated successfully');
+            this.isEditing = false; // Exit edit mode
+            this.$emit('updateUnlockDate', { id: this.id, unlockDate: this.currentUnlockDate }); // Emit the updated date to the parent
+            this.startCountdown(); // Restart countdown with the new unlock date
+          }
+        } else {
+          console.error('No ID provided for editing');
         }
-      } else {
-        console.error('No ID provided for editing');
+      } catch (error) {
+        console.error('Failed to update unlock date:', error);
+        alert('Failed to update unlock date.');
       }
-    } catch (error) {
-      console.error('Failed to update unlock date:', error);
-      alert('Failed to update unlock date.');
-    }
-  },
+    },
     startCountdown() {
-      const unlockDateTime = new Date(this.unlockDate).getTime();
-      const interval = setInterval(() => {
+      if (this.countdownInterval) {
+        clearInterval(this.countdownInterval);
+      }
+
+      const unlockDateTime = new Date(this.currentUnlockDate).getTime();
+      this.countdownInterval = setInterval(() => {
         const currentTime = new Date().getTime();
         const timeRemaining = unlockDateTime - currentTime;
 
         if (timeRemaining <= 0) {
-          clearInterval(interval);
+          clearInterval(this.countdownInterval);
           this.countdownTime = 'Complete';
           this.localStatus = 'Unlocked';
           this.descriptionVisible = true;
