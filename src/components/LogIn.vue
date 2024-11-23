@@ -1,22 +1,42 @@
 <template>
-  <div class="login-container">
+  <div class="login-container" >
     <div class="login-card">
-      <h2>Login to Chrono Capsule</h2>
+      <!-- Application Logo -->
+      <div class="logo-container">
+        <img src="@/assets/ccLogo.png" alt="Chrono Capsule Logo" class="app-logo" />
+      </div>
+
+      <!-- Heading -->
+      <h2>Welcome to Chrono Capsule</h2>
+      <p class="subtitle">Your memories secured in time.....</p>
+
+      <!-- Login Form -->
       <form @submit.prevent="login">
         <div class="form-group">
           <label for="username">Username</label>
-          <input type="text" id="username" v-model="username" placeholder="Enter username" required />
+          <input
+            type="text"
+            id="username"
+            v-model="username"
+            placeholder="Enter username"
+            required
+          />
         </div>
         <div class="form-group">
           <label for="password">Password</label>
-          <input type="password" id="password" v-model="password" placeholder="Enter password" required />
+          <input
+            type="password"
+            id="password"
+            v-model="password"
+            placeholder="Enter password"
+            required
+          />
         </div>
         <button type="submit" class="login-button">Login</button>
       </form>
-      
-      <!-- Link to navigate to registration page -->
+
       <a @click.prevent="goToRegisterPage" class="register-link">
-        Not registered? Register here
+        Not a user? <strong>Register here</strong>
       </a>
     </div>
   </div>
@@ -63,88 +83,118 @@ export default {
       }
     },
     goToRegisterPage() {
-      this.$router.push('/register'); // Navigate to the registration page
+      this.$router.push('/register'); 
     }
   }
 };
+
 </script>
 
 <style scoped>
-/* Centering the login form on the page */
+
 .login-container {
+  background: url("@/assets/CapsuleBackground.jpg") center/cover no-repeat;
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background-color: #1abc9c; /* Background color matching the header */
+  position: relative;
 }
 
-/* Styling for the login card */
+.login-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4); 
+  z-index: -1;
+}
+
+
 .login-card {
-  width: 400px;
-  padding: 30px;
-  background-color: white;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  background-color: #ffffff;
+  padding: 40px;
+  border-radius: 10px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
   text-align: center;
+  max-width: 400px;
+  width: 100%;
 }
 
-/* Form styling */
+
+.app-logo {
+  width: 100px;
+  height: auto;
+}
+
+
+h2 {
+  color: #34495e;
+  margin-bottom: 10px;
+  font-size: 28px;
+  font-weight: bold;
+}
+.subtitle {
+  font-size: 18px;
+  font-style: italic;
+  color: #7f8c8d;
+  margin-bottom: 20px;
+}
+
+
 .form-group {
   margin-bottom: 20px;
   text-align: left;
 }
-
 .form-group label {
   display: block;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
   color: #2c3e50;
   font-size: 14px;
+  font-weight: bold;
 }
-
 .form-group input {
   width: 100%;
   padding: 10px;
   font-size: 16px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  border: 1px solid #bdc3c7;
+  border-radius: 6px;
+  transition: border-color 0.3s;
+}
+.form-group input:focus {
+  outline: none;
+  border-color: #1abc9c;
 }
 
-/* Button styling */
+
 .login-button {
   width: 100%;
-  padding: 10px;
-  background-color: #2980b9; /* Matching the blue color in the theme */
-  color: white;
+  padding: 12px;
+  background: #1abc9c;
+  color: #ffffff;
   border: none;
-  border-radius: 4px;
-  font-size: 18px;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: bold;
   cursor: pointer;
   transition: background-color 0.3s;
 }
-
 .login-button:hover {
-  background-color: #f39c12; /* Orange hover effect to match theme */
+  background: #16a085;
 }
 
-/* Styling for the registration link */
 .register-link {
-  margin-top: 20px;
   display: inline-block;
-  color: #2980b9; /* Blue color to indicate a clickable link */
+  margin-top: 20px;
+  color: #1abc9c;
+  font-size: 14px;
+  text-decoration: none;
   cursor: pointer;
-  font-size: 16px;
-  text-decoration: underline;
   transition: color 0.3s;
 }
-
 .register-link:hover {
-  color: #f39c12; /* Hover color for link */
-}
-
-h2 {
-  color: #333;
-  margin-bottom: 20px;
-  font-size: 24px;
+  color: #16a085;
 }
 </style>

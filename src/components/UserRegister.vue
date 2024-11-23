@@ -1,7 +1,12 @@
 <template>
   <div class="register-container">
     <div class="register-card">
+      
+      <div class="logo-section">
+        <img src="@/assets/ccLogo.png" alt="Chrono Capsule Logo" class="logo" />
+      </div>
       <h2>User Registration Chrono Capsule</h2>
+      <p class="subtitle">Your memories secured in time.....</p>
       <form @submit.prevent="registerUser">
         <div class="form-group">
           <label for="username">Username</label>
@@ -22,11 +27,12 @@
       </form>
 
       <div class="link-to-login">
-        <p>Already have an account? <router-link to="/login">Login here</router-link></p>
+        <p>Already have an account? <router-link to="/login"><strong>Login here</strong></router-link></p>
       </div>
     </div>
   </div>
 </template>
+
 
 <script>
 import axios from 'axios';
@@ -51,8 +57,11 @@ export default {
 
         if (response.status === 200) {
           // Redirect to the login page after successful registration
+          alert('Registration successful');
           this.$router.push('/login');
         }
+
+
       } catch (error) {
         console.error('Registration error:', error);
         if (error.response && error.response.data) {
@@ -67,16 +76,14 @@ export default {
 </script>
 
 <style scoped>
-/* Centering the login form on the page */
 .register-container {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background-color: #1abc9c; /* Background color matching the header */
+  background: url("@/assets/CapsuleBackground.jpg") center/cover no-repeat;
 }
 
-/* Styling for the login card */
 .register-card {
   width: 400px;
   padding: 30px;
@@ -84,9 +91,27 @@ export default {
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   text-align: center;
+  position: relative;
 }
 
-/* Form styling */
+.logo-section {
+  margin-bottom: 20px;
+}
+
+.logo {
+  max-width: 120px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
+.subtitle {
+  font-size: 18px;
+  font-style: italic;
+  color: #7f8c8d;
+  margin-bottom: 20px;
+}
+
 .form-group {
   margin-bottom: 20px;
   text-align: left;
@@ -97,6 +122,7 @@ export default {
   margin-bottom: 8px;
   color: #2c3e50;
   font-size: 14px;
+  font-weight: bold;
 }
 
 .form-group input {
@@ -107,11 +133,10 @@ export default {
   border-radius: 4px;
 }
 
-/* Button styling */
 .register-button {
   width: 100%;
   padding: 10px;
-  background-color: #2980b9; /* Matching the blue color in the theme */
+  background: #1abc9c;
   color: white;
   border: none;
   border-radius: 4px;
@@ -121,7 +146,7 @@ export default {
 }
 
 .register-button:hover {
-  background-color: #f39c12; /* Orange hover effect to match theme */
+  background: #16a085;
 }
 
 h2 {
@@ -131,11 +156,17 @@ h2 {
 }
 
 .link-to-login {
-  margin-top: 15px;
+  display: inline-block;
+  margin-top: 20px;
+  color: #1abc9c;
+  font-size: 14px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.3s;
 }
 
-.link-to-login p {
-  font-size: 14px;
-  color: #2980b9;
+.link-to-login :hover{
+  color: #16a085;
 }
 </style>
+
