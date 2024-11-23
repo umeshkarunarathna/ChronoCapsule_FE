@@ -21,28 +21,51 @@
       />
     </div>
 
-    <!-- Modal Popup -->
+    
     <div v-if="showModal" class="modal-overlay" @click.self="popupModal">
-      <div class="modal-content">
-        <h2>Create New Capsule</h2>
-        <form @submit.prevent="submitForm">
-          <div class="form-group">
-            <label for="title">Title: </label>
-            <input type="text" v-model="newCapsule.title" id="title" required />
-          </div>
-          <div class="form-group">
-            <label for="description">Description: </label>
-            <input type="text" v-model="newCapsule.description" id="description" required>
-          </div>
-          <div class="form-group">
-            <label for="unlockDate">Unlock Date: </label>
-            <input type="date" v-model="newCapsule.unlockDate" id="unlockDate" required :min="currentDate" />
-          </div>
-          <button type="submit" class="submit-btn">Create</button>
-          <button type="button" class="cancel-btn" @click="popupModal">Cancel</button>
-        </form>
+  <div class="modal-content">
+    <h2 class="modal-title">Create a New Capsule</h2>
+    <form @submit.prevent="submitForm">
+      <div class="form-group">
+        <label for="title">Title:</label>
+        <input
+          type="text"
+          v-model="newCapsule.title"
+          id="title"
+          class="input-field"
+          placeholder="Enter the title"
+          required
+        />
       </div>
-    </div>
+      <div class="form-group">
+        <label for="description">Description:</label>
+        <textarea
+          v-model="newCapsule.description"
+          id="description"
+          class="textarea-field"
+          placeholder="Enter the Description"
+          required
+        ></textarea>
+      </div>
+      <div class="form-group">
+        <label for="unlockDate">Unlock Date:</label>
+        <input
+          type="date"
+          v-model="newCapsule.unlockDate"
+          id="unlockDate"
+          class="input-field"
+          required
+          :min="currentDate"
+        />
+      </div>
+      <div class="button-group">
+        <button type="submit" class="submit-btn">Create</button>
+        <button type="button" class="cancel-btn" @click="popupModal"> Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
   </div>
 </template>
 
@@ -145,7 +168,7 @@ export default {
 
 .dashboard {
   padding: 20px;
-  background-color: #ccd2d5; 
+  background-color: #6f8793; 
   min-height: 100vh; 
 }
 
@@ -164,16 +187,31 @@ export default {
 .create-btn {
   width: 100%;
   padding: 15px;
-  background-color: cadetblue;
-  color: white;
   border: none;
-  border-radius: 5px;
+  border-radius: 8px; 
   cursor: pointer;
-  height: 40px;
-  background-color: #1abc9c; 
-  color: #ecf0f1; 
-  transition: background-color 0.3s ease;
+  height: 45px; 
+  background: linear-gradient(145deg, #1abc9c, #16a085); 
+  color: #fff; 
+  font-size: 16px; 
+  font-weight: bold;
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.1); 
+  transition: all 0.3s ease; 
+  transform: translateY(-2px); 
 }
+
+.create-btn:hover {
+  color: black;
+  background: linear-gradient(145deg, #72b13b, #5c7e3f); 
+  transform: translateY(-6px); 
+  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.2); 
+}
+
+.create-btn:active {
+  transform: translateY(-2px); 
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); 
+}
+
 
 .capsule-grid {
   border-style: solid;
@@ -192,53 +230,108 @@ export default {
 
 
 .modal-overlay {
-  font-size: medium;
-  font-weight:bold ;
+  font-size: 1rem;
+  font-weight: bold;
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.7);
+  background-color: rgba(0, 0, 0, 0.8);
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 999;
 }
 
 .modal-content {
-  background-color: rgb(174, 223, 193);
-  padding: 30px;
-  border-radius: 8px;
+  background: linear-gradient(to bottom right, #ffffff, #e8f8f5);
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
   width: 100%;
-  max-width: 400px;
+  max-width: 500px;
+  text-align: center;
+}
+
+.modal-title {
+  font-size: 1.8rem;
+  margin-bottom: 20px;
+  color: #2c3e50;
 }
 
 .form-group {
-  padding: 20px;
-  margin-bottom: 15px;
-  color: #2c3e50; 
-  font-size: 1rem;
+  margin-bottom: 20px;
+  text-align: left;
 }
 
-.submit-btn, .cancel-btn {
-  padding: 10px 15px;
-  margin-right: 10px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
+label {
+  font-size: 1rem;
+  margin-bottom: 8px;
+  display: block;
+  color: #34495e;
+}
+
+.input-field,
+.textarea-field {
   width: 100%;
-  margin-bottom: 10px;
+  padding: 12px 15px;
+  margin-top: 5px;
+  border: 1px solid #bdc3c7;
+  border-radius: 8px;
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.3s;
+}
+
+.input-field:focus,
+.textarea-field:focus {
+  border-color: #1abc9c;
+  box-shadow: 0 0 5px rgba(26, 188, 156, 0.5);
+}
+
+.textarea-field {
+  min-height: 80px;
+  resize: vertical;
+}
+
+.button-group {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.submit-btn,
+.cancel-btn {
+  flex: 1;
+  padding: 12px 0;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s, transform 0.2s;
 }
 
 .submit-btn {
-  background-color: cadetblue;
+  background-color: #1abc9c;
   color: white;
 }
 
+.submit-btn:hover {
+  background-color: rgb(72, 157, 72);
+  transform: translateY(-2px);
+}
+
 .cancel-btn {
-  background-color: grey;
+  background-color: rgb(234, 118, 105);
   color: white;
 }
+
+.cancel-btn:hover {
+  background-color: #c0392b;
+  transform: translateY(-2px);
+}
+
 
 .capsule-grid .capsule-card {
   background-color: #ffffff; 
@@ -250,21 +343,21 @@ export default {
 
 #description{
   height: 150px;
-  width: 300px;
+  width: 98%;
 }
 
 
 @media (min-width: 768px) {
   .header {
-    flex-direction: row; /* Horizontal layout for larger screens */
+    flex-direction: row; 
   }
 
   .create-btn {
-    width: auto; /* Shrink button width on larger screens */
+    width: auto; 
   }
 
   .submit-btn, .cancel-btn {
-    width: auto; /* Shrink buttons back to fit content */
+    width: auto; 
     margin-bottom: 0;
   }
   

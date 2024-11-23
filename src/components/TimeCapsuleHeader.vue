@@ -8,25 +8,16 @@
 
     <div class="header-icons">
 
-      <div class="settings-dropdown">
-        <i class="fas fa-cog" title="Settings" @click="toggleSettingsMenu"></i>
-        <div v-if="showSettingsMenu" class="dropdown-menu" id="settings">
-          <ul>
-            <li @click="openAccountSettings">Account Settings</li>
-            <li @click="openPreferences">Preferences</li>
-          </ul>
-        </div>
-      </div>
-      
-      <div class="profle-dropdown">
-        <i class="fas fa-user" title="User Profile" @click="toggleProfileMenu"></i>
-        <div v-if="showProfileMenu" class="dropdown-menu" id="profile">
-          <ul>
-            <li>Profile</li>
-            <li>Logout</li>
-          </ul>
-        </div>
-      </div>
+      <div class="profile-dropdown">
+  <i class="fas fa-user" title="Settings" @click="toggleSettingsMenu"></i>
+  <div :class="{'dropdown-menu': true, 'show': showSettingsMenu}" id="settings">
+    <ul>
+      <li @click="logout">Profile</li>
+      <li @click="logout">Logout</li>
+    </ul>
+  </div>
+</div>
+
       
     </div>
   </header>
@@ -50,16 +41,7 @@ export default {
     toggleSettingsMenu() {
       this.showSettingsMenu = !this.showSettingsMenu; 
     },
-    openAccountSettings() {
-      
-      //console.log("Account Settings clicked test");
-      this.showSettingsMenu = false;
-    },
-    openPreferences() {
-      
-      //console.log("Preferences clicke test");
-      this.showSettingsMenu = false;
-    },
+  
     logout() {
       
       //console.log("Log Out clicke test");
@@ -82,8 +64,10 @@ export default {
 }
 
 .logo-and-title {
+  font-size: large;
   display: flex;
   align-items: center;
+  color: #34495e;;
 }
 
 .logo {
@@ -92,33 +76,6 @@ export default {
   margin-right: 10px;
 }
 
-.search-bar-container {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-}
-
-.search-bar {
-  display: flex;
-  align-items: center;
-  border: 1px solid #ccc;
-  padding: 5px;
-  border-radius: 4px;
-}
-
-.search-bar input {
-  border: none;
-  outline: none;
-  padding: 5px;
-  font-size: 16px;
-}
-
-.search-bar i {
-  margin-left: 5px;
-  font-size: 20px;
-  cursor: pointer;
-  color: #333;
-}
 
 .header-icons {
   display: flex;
@@ -131,24 +88,35 @@ export default {
   font-size: 28px;
 }
 
-.settings-dropdown, .profile-dropdown {
+.profile-dropdown {
   position: relative;
 }
-
-
-#settings{top: 40px;}
-
-#profile{top: 80px;}
 
 .dropdown-menu {
   position: absolute;
   right: 0;
-  background-color: #cec4b3;
-  border: 1px solid #cec4b3; 
-  border-radius: 4px;
-  width: 150px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-  z-index: 10;
+  background-color: #2c3e50;  
+  border: 1px solid #34495e;  
+  border-radius: 6px; 
+  width: 180px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  z-index: 20;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(10px);
+  transition: opacity 0.3s ease, transform 0.3s ease, visibility 0s 0.3s; 
+}
+
+.dropdown-menu.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+
+#profile {
+  top: 85px;
 }
 
 .dropdown-menu ul {
@@ -158,14 +126,27 @@ export default {
 }
 
 .dropdown-menu li {
-  padding: 10px;
+  padding: 12px 16px;
   cursor: pointer;
-  font-size: 14px;
-  color: black;
+  font-size: 15px;
+  color: #ecf0f1; 
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .dropdown-menu li:hover {
-  background-color: #e67e22; 
+  background-color: #4a7e7e; 
+  color: #ffffff;
+}
+
+.fas {
+  font-size: 20px;
+  color: #ecf0f1; 
+  cursor: pointer;
+}
+
+.fas:hover {
+  color: #000000; 
+  transition: color 0.2s ease;
 }
 
 </style>
