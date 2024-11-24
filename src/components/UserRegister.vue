@@ -63,6 +63,8 @@ export default {
 
 
       } catch (error) {
+        alert('Registration failed !');
+        window.location.reload();
         console.error('Registration error:', error);
         if (error.response && error.response.data) {
           this.errorMessage = error.response.data.message;
